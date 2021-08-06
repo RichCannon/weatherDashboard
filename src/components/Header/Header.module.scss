@@ -1,0 +1,12 @@
+.header {
+   display: flex;
+   flex: .1;
+   background-color: orange;
+   justify-content: flex-end;
+   align-items: center  ;
+}
+
+.button {
+   margin-right: 2em;
+   padding: .5em;
+}

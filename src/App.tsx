@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { configureStore } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { combineReducers } from 'redux';
+import createSagaMiddleware from 'redux-saga';
+import { all } from 'redux-saga/effects';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import s from './App.module.scss';
+import Header from './components/Header/Header';
+import { authReducer } from './logic/reducers/authReducer'
+import { weatherReducer } from './logic/reducers/weatherReducer';
+import { WeatherSaga } from './logic/saga/weatherSaga';
+import MainPage from './pages/MainPage/MainPage';
+
+const sagaMiddleware = createSagaMiddleware();
+
+
+function* rootSaga() {
+   yield all([
+      WeatherSaga()
+   ])
+}
+
+const reducer = combineReducers({
+   weather: weatherReducer,
+   auth: authReducer
+})
+
+
+const store = configureStore({
+   reducer,
+   middleware: [sagaMiddleware] as const,
+
+})
+
+sagaMiddleware.run(rootSaga)
+
+export type RootState = ReturnType<typeof store.getState>
+
+const App = () => {
+   return (
+      <Provider store={store}>
+         <div className={s.container}>
+            <Header />
+            <MainPage />
+         </div>
+      </Provider>
+   );
 }
 
 export default App;

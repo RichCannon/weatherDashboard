@@ -1,0 +1,1 @@
+export type LoginTypes = `google` | `github` | `yahoo`
