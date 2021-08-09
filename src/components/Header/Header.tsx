@@ -7,6 +7,7 @@ import { authSelector } from '../../logic/selectors/authSelector'
 import Modal from '../Modal/Modal'
 import s from './Header.module.scss'
 import { LoginTypes } from '../../types/types'
+import LoginMethodsModal from '../LoginMethodsModal/LoginMethodsModal'
 
 const Header = () => {
 
@@ -19,22 +20,21 @@ const Header = () => {
 
       let provider: any
 
-
       switch (loginWith) {
-         case `github`:
+         case LoginTypes.Github:
             provider = new firebase.auth.GithubAuthProvider
             break;
-         case `google`:
+         case LoginTypes.Google:
             provider = new firebase.auth.GoogleAuthProvider
             break;
-         case `yahoo`:
+         case LoginTypes.Yahoo:
             provider = new firebase.auth.OAuthProvider('yahoo.com')
             break;
          default:
             return
       }
 
-      await authFirebase.signInWithPopup(provider) as any
+      await authFirebase.signInWithPopup(provider)
 
       setIsVisible(false)
    }
@@ -54,7 +54,10 @@ const Header = () => {
 
    return (
       <header className={s.header}>
-         {isVisible && <Modal onLoginMethodClick={onLoginMethodClick} onDismissClick={onDismissClick} />}
+         {isVisible &&
+            <Modal onDismissClick={onDismissClick}>
+               <LoginMethodsModal onLoginMethodClick={onLoginMethodClick} />
+            </Modal>}
          {!isAuth
             ? <button onClick={onLoginClick} className={`${s.login} ${s.button}`}>{`Log in`}</button>
             : <button onClick={onLogoutClick} className={`${s.logout} ${s.button}`}>{`Log out`}</button>

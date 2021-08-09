@@ -1,1 +1,5 @@
-export type LoginTypes = `google` | `github` | `yahoo`
+export enum LoginTypes {
+   Google = `google`,
+   Github = `github`,
+   Yahoo = `yahoo`
+}
