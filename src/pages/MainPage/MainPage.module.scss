@@ -2,3 +2,15 @@
    display: flex;
    flex: .9;
 }
+
+.modalContent {
+   padding: 1em;
+   width: 500px;
+}
+
+@media (orientation: portrait) {
+   .modalContent {
+      
+   width: fit-content;
+   }
+}

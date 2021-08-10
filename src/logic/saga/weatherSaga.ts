@@ -10,9 +10,8 @@ function* getWeatherRequest(action: Action) {
 
    if (weatherActions.weather.request.match(action)) {
       try {
-
+         
          const weatherReponse: AxiosResponse<any> = yield call(api.getWeather, action.payload)
-
          yield put(weatherActions.weather.success(weatherReponse.data))
       } catch (e) {
 

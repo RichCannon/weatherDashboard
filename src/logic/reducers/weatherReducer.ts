@@ -1,7 +1,9 @@
-import { createReducer } from "@reduxjs/toolkit"
+import { createAction, createReducer } from "@reduxjs/toolkit"
 
+import { LocationT } from "../../types/types";
 import { GetWeatherRestActions } from "../actions/weatherActions"
-import { createRestActions } from "../helpers/helpers";
+import { createRestActions, defauleRestState } from "../helpers/helpers";
+import { DefaultRestStateT } from "../helpers/restHelpers";
 
 
 export type HourlyTemp = {
@@ -11,15 +13,17 @@ export type HourlyTemp = {
 
 
 export type WeatherDataT = {
-   lat: number
-   lng: number
    hourly: HourlyTemp
+   lat: number
+   lon: number
+   timestamp: number
 }
 
 
 
 type InitStateT = {
-   weather: WeatherDataT[]
+   weather: DefaultRestStateT<WeatherDataT[]>
+   userLocation: LocationT
 }
 
 
@@ -35,14 +39,19 @@ const getWeatherRestActions = createRestActions<
    GetWeatherPayload
 >(GetWeatherRestActions);
 
+
 export const weatherActions = {
-   weather: getWeatherRestActions
+   weather: getWeatherRestActions,
+   userLocation: createAction<LocationT>(`weather/setUserLocation`),
+   updateWeather: createAction<WeatherDataT[]>(`weather/updateWeather`)
 }
 
 
 
+
 const initState: InitStateT = {
-   weather: []
+   weather: defauleRestState<WeatherDataT[]>(),
+   userLocation: { lan: -3.745, lng: -38.523 }
 }
 
 
@@ -50,7 +59,27 @@ const initState: InitStateT = {
 export const weatherReducer = createReducer<InitStateT>(initState, (builder) => {
    builder
       .addCase(weatherActions.weather.success, (state, action) => {
-         state.weather = [...state.weather, action.payload]
+         state.weather = {
+            data: [...state.weather.data!, { ...action.payload, timestamp: Math.floor(Date.now() / 1000) }],
+            fetching: false,
+            error: null
+         }
+         console.log(`state.weather.data`, state.weather.data)
+
+      })
+      .addCase(weatherActions.weather.request, state => {
+         state.weather.fetching = true
+      })
+      .addCase(weatherActions.userLocation, (state, action) => {
+         state.userLocation = action.payload
+      })
+      .addCase(weatherActions.updateWeather, (state, action) => {
+         state.weather = {
+            data: action.payload,
+            fetching: false,
+            error: null
+         }
       })
 })
+
 

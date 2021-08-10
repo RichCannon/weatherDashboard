@@ -1,12 +1,41 @@
 .header {
    display: flex;
-   flex: .1;
+   flex: 0.1;
    background-color: orange;
-   justify-content: flex-end;
-   align-items: center  ;
+   justify-content: space-between;
+   align-items: center;
+   padding: 0 3em;
 }
 
 .button {
    margin-right: 2em;
-   padding: .5em;
+   padding: 0.5em;
+}
+
+.userName {
+   font-weight: bold;
+   font-size: 16px;
+   color: white;
+   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+   align-items: center;
+   display: flex;
+}
+
+.avatar {
+   border-radius: 50%;
+   height: 3em;
+   width: 3em;
+   margin-right: 1em;
+   overflow: hidden;
+}
+
+.userData {
+   display: flex;
+   height: 100%;
+   align-items: center;
+}
+
+.img {
+   width: 100%;
+   height: 100%;
 }

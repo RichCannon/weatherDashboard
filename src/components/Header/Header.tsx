@@ -16,23 +16,11 @@ const Header = () => {
    const { authFirebase } = useSelector(authSelector)
    const [isAuth] = useAuthState(authFirebase)
 
+
+   console.log(isAuth)
    const onLoginMethodClick = async (loginWith: LoginTypes) => {
 
-      let provider: any
-
-      switch (loginWith) {
-         case LoginTypes.Github:
-            provider = new firebase.auth.GithubAuthProvider
-            break;
-         case LoginTypes.Google:
-            provider = new firebase.auth.GoogleAuthProvider
-            break;
-         case LoginTypes.Yahoo:
-            provider = new firebase.auth.OAuthProvider('yahoo.com')
-            break;
-         default:
-            return
-      }
+      const provider = new firebase.auth.OAuthProvider(loginWith)
 
       await authFirebase.signInWithPopup(provider)
 
@@ -51,17 +39,25 @@ const Header = () => {
       setIsVisible(false)
    }
 
-
    return (
       <header className={s.header}>
          {isVisible &&
             <Modal onDismissClick={onDismissClick}>
                <LoginMethodsModal onLoginMethodClick={onLoginMethodClick} />
-            </Modal>}
-         {!isAuth
-            ? <button onClick={onLoginClick} className={`${s.login} ${s.button}`}>{`Log in`}</button>
-            : <button onClick={onLogoutClick} className={`${s.logout} ${s.button}`}>{`Log out`}</button>
+            </Modal>
          }
+         <>
+            <div className={s.userData}>
+               <div className={s.avatar} >{isAuth && <img src={isAuth.photoURL!} className={s.img} />}</div>
+               <div className={s.userName}>
+                  {isAuth ? isAuth.displayName : ``}
+               </div>
+            </div>
+            {!isAuth
+               ? <button onClick={onLoginClick} className={`${s.login} ${s.button}`}>{`Log in`}</button>
+               : <button onClick={onLogoutClick} className={`${s.logout} ${s.button}`}>{`Log out`}</button>
+            }
+         </>
       </header>
    )
 }
