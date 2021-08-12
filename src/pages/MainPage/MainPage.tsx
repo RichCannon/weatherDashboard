@@ -6,12 +6,9 @@ import s from './MainPage.module.scss'
 import { userLocationSelector, weatherDataSelector } from '../../logic/selectors/weatherSelectors'
 import { HourlyTemp, weatherActions } from '../../logic/reducers/weatherReducer'
 import { authSelector } from '../../logic/selectors/authSelector'
-import { useAuthState } from 'react-firebase-hooks/auth'
 import Modal from '../../components/Modal/Modal'
 import GraphModal from '../../components/GraphModal/GraphModal'
-import { LocationT } from '../../types/types'
-
-
+import { distanceBetween2Dots } from '../../utils/helpers'
 
 const options = {
    disableDefaultUI: true,
@@ -20,19 +17,6 @@ const options = {
 
 const radiusForCacheData = 17 // kilometrs
 const cacheLiveTime = 10 // sec 3600 sec = 1 hour
-
-const distanceBetween2Dots = (mk1: LocationT, mk2: LocationT) => {
-   const R = 6371.071; // Radius of the Earth in kilometrs
-   const rlat1 = mk1.lan * (Math.PI / 180); // Convert degrees to radians
-   const rlat2 = mk2.lan * (Math.PI / 180); // Convert degrees to radians
-   const difflat = rlat2 - rlat1; // Radian difference (latitudes)
-   const difflon = (mk2.lng - mk1.lng) * (Math.PI / 180); // Radian difference (longitudes)
-   return 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2)
-      * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2)
-      * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
-}
-
-
 
 const MainPage = () => {
    const { isLoaded } = useLoadScript({
@@ -44,10 +28,9 @@ const MainPage = () => {
    const [currentWeather, setCurrentWeather] = useState<HourlyTemp>([])
 
    const [isVisible, setIsVisible] = useState(false)
-   const { authFirebase } = useSelector(authSelector)
    const userLocation = useSelector(userLocationSelector)
+   const { userData } = useSelector(authSelector)
 
-   const [isAuth] = useAuthState(authFirebase)
 
    const dispatch = useDispatch()
    const { data: weather, fetching: isLoading } = useSelector(weatherDataSelector)
@@ -67,17 +50,15 @@ const MainPage = () => {
    }, [])
 
    const onClick = useCallback((e: google.maps.MapMouseEvent) => {
-
-
-      if (isAuth && e.latLng) {
+      if (userData && e.latLng) {
          setIsVisible(true)
          if (weather.length === 0) {
             dispatch(weatherActions.weather.request({ lat: e.latLng.lat(), lng: e.latLng.lng() }))
          }
          else {
-
+            // Check if cache is actual
             const newWeather = weather.filter(d => Math.floor(Date.now() / 1000) - d.timestamp <= cacheLiveTime)
-
+            // Update cache
             dispatch(weatherActions.updateWeather(newWeather))
 
             for (let i = 0; i < newWeather.length; i++) {
@@ -90,7 +71,7 @@ const MainPage = () => {
                if (distance <= radiusForCacheData) {
                   setCurrentWeather(d.hourly)
                   break
-               }
+               } // If there is no cached data, get the data for this location
                else if ((distance > radiusForCacheData && (i === newWeather.length - 1))) {
                   dispatch(weatherActions.weather.request({ lat: e.latLng.lat(), lng: e.latLng.lng() }))
                }
@@ -100,7 +81,7 @@ const MainPage = () => {
       else {
          window.alert(`To look on weather you need to log in!`)
       }
-   }, [isAuth, weather])
+   }, [userData, weather])
 
 
 

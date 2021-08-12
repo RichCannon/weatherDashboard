@@ -1,4 +1,4 @@
-import { createReducer } from "@reduxjs/toolkit";
+import { createAction, createReducer } from "@reduxjs/toolkit";
 import firebase from 'firebase'
 
 firebase.initializeApp({
@@ -10,19 +10,26 @@ firebase.initializeApp({
    appId: "1:611854473148:web:a7d9a67d524751e4623db9"
 })
 
+
+
 const initState = {
    auth: {
       authFirebase: firebase.auth(),
-      firebase: firebase
+      firebase: firebase,
+      userData: null as firebase.User | null
    }
 }
 
+
+export const authActions = {
+   setUser: createAction<firebase.User | null>(`auth/setUser`)
+}
 
 
 
 export const authReducer = createReducer(initState, builder => {
    builder
-      .addCase(`afaf`, () => {
-
+      .addCase(authActions.setUser, (state,action) => {
+         state.auth.userData = action.payload
       })
 })

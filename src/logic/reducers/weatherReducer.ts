@@ -32,10 +32,12 @@ export type GetWeatherPayload = {
    lng: number
 }
 
+export type GetWeatherResponse = WeatherDataT
+
 
 const getWeatherRestActions = createRestActions<
    typeof GetWeatherRestActions,
-   any,
+   GetWeatherResponse,
    GetWeatherPayload
 >(GetWeatherRestActions);
 
@@ -60,14 +62,15 @@ export const weatherReducer = createReducer<InitStateT>(initState, (builder) => 
    builder
       .addCase(weatherActions.weather.success, (state, action) => {
          state.weather = {
-            data: [...state.weather.data!, { ...action.payload, timestamp: Math.floor(Date.now() / 1000) }],
+            data: [...state.weather.data, { ...action.payload, timestamp: Math.floor(Date.now() / 1000) }],
             fetching: false,
             error: null
          }
-         console.log(`state.weather.data`, state.weather.data)
-
       })
       .addCase(weatherActions.weather.request, state => {
+         state.weather.fetching = true
+      })
+      .addCase(weatherActions.weather.failure, state => {
          state.weather.fetching = true
       })
       .addCase(weatherActions.userLocation, (state, action) => {
