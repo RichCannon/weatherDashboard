@@ -1,6 +1,6 @@
 .containerMap {
    display: flex;
-   flex: .9;
+   flex: 0.93;
 }
 
 .modalContent {
@@ -10,7 +10,6 @@
 
 @media (orientation: portrait) {
    .modalContent {
-      
-   width: fit-content;
+      width: fit-content;
    }
 }

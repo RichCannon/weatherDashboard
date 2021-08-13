@@ -68,6 +68,7 @@ export const weatherReducer = createReducer<InitStateT>(initState, (builder) => 
          }
       })
       .addCase(weatherActions.weather.request, state => {
+         state.weather.error = null
          state.weather.fetching = true
       })
       .addCase(weatherActions.weather.failure, state => {

@@ -1,8 +1,9 @@
 import * as d3 from "d3"
 import { NumberValue } from "d3"
 import { FC, useCallback, useEffect, useRef } from "react"
+import { HourlyTemp } from "../../types/types"
 
-import { HourlyTemp } from "../../logic/reducers/weatherReducer"
+
 import s from './GraphModal.module.scss'
 
 type GraphModalP = {
@@ -70,8 +71,8 @@ const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
 
       xAxis(xAxisG.attr(`transform`, `translate(${0}, ${innerHeight + margin.top + spaceBetweenRect})`))
       yAxis(yAxisG.attr(`transform`, `translate(${-spaceBetweenRect}, ${margin.top})`))
-
-      //@ts-ignore
+  
+      // @ts-ignore
       const lineGenerator = d3.line<HourlyTemp[0]>()
          .curve(d3.curveBasis)
          .x(d => xScale(`${d.dt}`))

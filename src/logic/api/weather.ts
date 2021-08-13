@@ -8,7 +8,6 @@ const EXCLUDE_PARTS = `current,minutely,daily,alerts`
 const UNIT_TYPE = `metric`
 
 
-//https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${WEATHER_KEY}
 export const api = {
    getWeather: async ({ lat, lng }:GetWeatherPayload) => {
       const data = await axios.get(

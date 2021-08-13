@@ -26,5 +26,3 @@ export type DefaultRestStateT<T> = {
    fetching: boolean
    error: BaseErrorType | null
 }
-
-

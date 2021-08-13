@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import s from './MainPage.module.scss'
 import { userLocationSelector, weatherDataSelector } from '../../logic/selectors/weatherSelectors'
-import { HourlyTemp, weatherActions } from '../../logic/reducers/weatherReducer'
+import {  weatherActions } from '../../logic/reducers/weatherReducer'
 import { authSelector } from '../../logic/selectors/authSelector'
 import Modal from '../../components/Modal/Modal'
 import GraphModal from '../../components/GraphModal/GraphModal'
 import { distanceBetween2Dots } from '../../utils/helpers'
+import { HourlyTemp } from '../../types/types'
 
 const options = {
    disableDefaultUI: true,
