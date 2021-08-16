@@ -1,16 +1,14 @@
 import * as d3 from "d3"
 import { NumberValue } from "d3"
 import { FC, useCallback, useEffect, useRef } from "react"
+
 import { HourlyTemp } from "../../types/types"
-
-
+import { debounce } from "../../utils/helpers"
 import s from './GraphModal.module.scss'
 
 type GraphModalP = {
    dataAll: HourlyTemp | []
 }
-
-
 
 const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
 
@@ -18,18 +16,15 @@ const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
 
    const createGraph = useCallback((windowWidth: number) => {
 
-
       const getTime = d3.timeFormat("%H:%M")
 
       const margin = { top: 20, right: 20, bottom: 20, left: 60 }
       const spaceBetweenRect = 2
       const mobileWidth = 500
 
-
       const todayData = dataAll
          .filter(t => new Date(t.dt * 1000).getDate() === new Date().getDate())
          .map(d => ({ ...d, dt: getTime(new Date(d.dt * 1000)) }))
-
 
       const averageTemp = todayData.reduce((a, b) => a + b.temp, 0) / todayData.length
       const meanDeviation = Math.sqrt(todayData.reduce((prev, cur) => (Math.pow((averageTemp - cur.temp), 2)) + prev, 0) / (todayData.length - 1))
@@ -39,7 +34,6 @@ const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
 
       const innerWidth = width - (margin.left + margin.right)
       const innerHeight = height - (margin.top + margin.bottom)
-
 
       const svg = d3.select(svgRef.current)
          .attr(`width`, width)
@@ -74,9 +68,10 @@ const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
   
       // @ts-ignore
       const lineGenerator = d3.line<HourlyTemp[0]>()
-         .curve(d3.curveBasis)
-         .x(d => xScale(`${d.dt}`))
+         .curve(d3.curveBasis)  
+         .x(d => xScale(`${d.dt}`)! + ((xScale.bandwidth() - spaceBetweenRect)/2))
          .y(d => yScale(d.temp))
+         
 
 
       const rect = g.append(`g`).selectAll(`rect`).data(todayData)
@@ -87,7 +82,7 @@ const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
          .attr(`y`, d => yScale(d.temp))
          .attr(`transform`, `translate(${spaceBetweenRect},${margin.top})`)
 
-      const title = rect
+      rect
          .append('title')
          .attr(`x`, d => xScale(d.dt)!)
          .text((d) => `temperature = ${d.temp}\ntime = ${d.dt}`)
@@ -97,22 +92,6 @@ const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
          .attr(`d`, lineGenerator(todayData as HourlyTemp | Iterable<HourlyTemp[0]>))
          .attr(`transform`, `translate(${spaceBetweenRect},${margin.top})`)
 
-      // const tooltip = g.append(`g`)
-      //    .selectAll("rect")
-      //    .data(todayData)
-      //    .enter()
-      //    .append(`rect`)
-      //    .attr("fill", "#111")
-      //    .attr("opacity", "0.5")
-      //    //  .attr("class", "bar")
-      //    .attr("x", (d) => xScale(d.dt)!)
-      //    .attr("width", xScale.bandwidth())
-      //    .attr("y", (d) => yScale(d.temp))
-      //    .attr("height",d => innerHeight - yScale(d.temp))
-      //    .append('title')
-      //    .text((d) => `${d.temp}  ${d.dt}`)
-
-      //    .attr(`transform`, `translate(${spaceBetweenRect},${margin.top})`);
 
       return (window2Width: number) => {
 
@@ -139,17 +118,10 @@ const GraphModal: FC<GraphModalP> = ({ dataAll }) => {
 
 
    useEffect(() => {
-      const resizeGraph = createGraph(window.innerWidth)
+      const resizeGraph = debounce(createGraph(window.innerWidth), 300)
       //@ts-ignore
-      window.addEventListener(`resize`, (e) => resizeGraph(e.currentTarget.innerWidth))
-   }, [])
-
-
-
-   // useEffect(() => { 
-   //    resizeGraph(window.innerWidth)
-   // }, [dataAll])
-
+      window.addEventListener(`resize`, (e) =>  resizeGraph(e.currentTarget.innerWidth))
+   }, [createGraph])
 
    return (
       <svg id={`graph`} ref={svgRef}>

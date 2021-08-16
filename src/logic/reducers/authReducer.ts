@@ -15,7 +15,6 @@ firebase.initializeApp({
 const initState = {
    auth: {
       authFirebase: firebase.auth(),
-      firebase: firebase,
       userData: null as firebase.User | null
    }
 }

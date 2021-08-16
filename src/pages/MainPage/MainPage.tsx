@@ -17,7 +17,7 @@ const options = {
 }
 
 const radiusForCacheData = 17 // kilometrs
-const cacheLiveTime = 10 // sec 3600 sec = 1 hour
+const cacheLiveTime = 10 // sec (3600 sec = 1 hour)
 
 const MainPage = () => {
    const { isLoaded } = useLoadScript({

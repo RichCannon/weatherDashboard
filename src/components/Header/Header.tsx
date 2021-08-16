@@ -47,7 +47,7 @@ const Header = () => {
       <header className={s.header}>
          {isReady ? <>
             {isVisible &&
-               <Modal onDismissClick={onDismissClick}>
+               <Modal className={s.modalContent} onDismissClick={onDismissClick}>
                   <LoginMethodsModal onLoginMethodClick={onLoginMethodClick} />
                </Modal>
             }
